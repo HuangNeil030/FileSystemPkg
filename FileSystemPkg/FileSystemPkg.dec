@@ -1,0 +1,5 @@
+[Defines]
+  DEC_SPECIFICATION              = 0x00010005
+  PACKAGE_NAME                   = FileSystemPkg
+  PACKAGE_GUID                   = 5a539257-2345-4223-a123-543212345678
+  PACKAGE_VERSION                = 0.1
