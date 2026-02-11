@@ -70,8 +70,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 
 
 
-* 
-**注意:** 必須在 `TPL_APPLICATION` 優先級別下呼叫 。
+* **注意:** 必須在 `TPL_APPLICATION` 優先級別下呼叫 。
 
 
 
@@ -89,8 +88,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 
 
 
-* 
-**功能:** 設定成功後會清除螢幕，並將游標重置於 (0,0) 。
+* **功能:** 設定成功後會清除螢幕，並將游標重置於 (0,0) 。
 
 
 
@@ -98,8 +96,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 
 清除螢幕並填入背景色 。
 
-* 
-**功能:** 清除顯示畫面，游標位置設為 (0,0) 。
+* **功能:** 清除顯示畫面，游標位置設為 (0,0) 。
 
 
 
@@ -121,10 +118,6 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 * **參數 (Parameters):**
 * `Visible`: `TRUE` 為顯示，`FALSE` 為隱藏 。
 
-
-
-
-
 ---
 
 ## 3. 裝置與路徑 (Device & Path)
@@ -143,16 +136,10 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 
 ```
 
-
 * **功能:**
 * 可用來從包含檔案路徑的完整 Device Path 中分離出檔案系統的 Handle 。
 
-
 * 若找到 Handle，`DevicePath` 指標會前進到剩餘的路徑部分 。
-
-
-
-
 
 ---
 
@@ -165,21 +152,15 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 * 
 **OpenVolume()**: 開啟儲存區卷冊的根目錄 。
 
-
 * 回傳根目錄的 `EFI_FILE_PROTOCOL` Handle 。
 
-
 * 之後所有的檔案操作皆透過此 Root Handle 進行 。
-
-
-
-
 
 ---
 
 ## 5. 檔案操作 (File Protocol)
 
-`EFI_FILE_PROTOCOL` 提供檔案的開啟、讀寫、刪除與關閉功能 。
+*`EFI_FILE_PROTOCOL` 提供檔案的開啟、讀寫、刪除與關閉功能 。
 
 ### `Open()` - 開啟或建立檔案
 
@@ -190,8 +171,7 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 `NewHandle`: 傳回新開啟檔案的 Handle 。
 
 
-* 
-`FileName`: 檔案名稱（可含路徑修飾符如 `.` 或 `..`） 。
+* `FileName`: 檔案名稱（可含路徑修飾符如 `.` 或 `..`） 。
 
 
 * `OpenMode`:
@@ -199,14 +179,7 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 * `EFI_FILE_MODE_WRITE` (0x02)
 * `EFI_FILE_MODE_CREATE` (0x8000000000000000) 。
 
-
-
-
 * `Attributes` (僅在 Create 模式下有效): 如 Read Only, Hidden, Directory 等 。
-
-
-
-
 
 ### `Read()` - 讀取檔案
 
@@ -226,19 +199,13 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 
 寫入資料至目前檔案位置 。
 
-* 
-**注意:** 若空間不足但需要寫入，檔案大小會自動增長 。不支援直接寫入已開啟的目錄 。
-
-
+* **注意:** 若空間不足但需要寫入，檔案大小會自動增長 。不支援直接寫入已開啟的目錄 。
 
 ### `Delete()` - 刪除檔案
 
 關閉並刪除檔案 。
 
-* 
-**注意:** 無論成功與否，該 File Handle 都會被關閉 。若刪除失敗則回傳 `EFI_WARN_DELETE_FAILURE` 。
-
-
+* **注意:** 無論成功與否，該 File Handle 都會被關閉 。若刪除失敗則回傳 `EFI_WARN_DELETE_FAILURE` 。
 
 ### `Close()` - 關閉檔案
 
