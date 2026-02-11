@@ -22,27 +22,22 @@ typedef EFI_STATUS (EFIAPI *EFI_INPUT_READ_KEY) (
 
 
 * **參數 (Parameters):**
-* 
-`This`: 指向 `EFI_SIMPLE_TEXT_INPUT_PROTOCOL` 實例的指標 。
+* `This`: 指向 `EFI_SIMPLE_TEXT_INPUT_PROTOCOL` 實例的指標 。
 
 
-* 
-`Key`: 指向用來存放按鍵資訊（ScanCode 與 UnicodeChar）的緩衝區指標 。
+* `Key`: 指向用來存放按鍵資訊（ScanCode 與 UnicodeChar）的緩衝區指標 。
 
 
 
 
 * **回傳值 (Return Values):**
-* 
-`EFI_SUCCESS`: 成功讀取到按鍵 。
+* `EFI_SUCCESS`: 成功讀取到按鍵 。
 
 
-* 
-`EFI_NOT_READY`: 目前沒有按鍵輸入 。
+* `EFI_NOT_READY`: 目前沒有按鍵輸入 。
 
 
-* 
-`EFI_DEVICE_ERROR`: 硬體錯誤 。
+* `EFI_DEVICE_ERROR`: 硬體錯誤 。
 
 
 
@@ -64,16 +59,13 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 
 
 * **參數 (Parameters):**
-* 
-`NumberOfEvents`: `Event` 陣列中的事件數量 。
+* `NumberOfEvents`: `Event` 陣列中的事件數量 。
 
 
-* 
-`Event`: `EFI_EVENT` 類型的陣列 。
+* `Event`: `EFI_EVENT` 類型的陣列 。
 
 
-* 
-`Index`: 指向觸發事件在陣列中索引值的指標 。
+* `Index`: 指向觸發事件在陣列中索引值的指標 。
 
 
 
@@ -92,8 +84,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 設定輸出裝置的顯示模式 。
 
 * **參數 (Parameters):**
-* 
-`ModeNumber`: 欲設定的文字模式編號 。
+* `ModeNumber`: 欲設定的文字模式編號 。
 
 
 
@@ -117,8 +108,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 設定游標座標 。
 
 * **參數 (Parameters):**
-* 
-`Column`, `Row`: 游標目標位置（從 0,0 開始） 。
+* `Column`, `Row`: 游標目標位置（從 0,0 開始） 。
 
 
 
@@ -129,8 +119,7 @@ typedef EFI_STATUS (EFIAPI *EFI_WAIT_FOR_EVENT) (
 設定游標的可見性 。
 
 * **參數 (Parameters):**
-* 
-`Visible`: `TRUE` 為顯示，`FALSE` 為隱藏 。
+* `Visible`: `TRUE` 為顯示，`FALSE` 為隱藏 。
 
 
 
@@ -208,14 +197,12 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 * `OpenMode`:
 * `EFI_FILE_MODE_READ` (0x01)
 * `EFI_FILE_MODE_WRITE` (0x02)
-* 
-`EFI_FILE_MODE_CREATE` (0x8000000000000000) 。
+* `EFI_FILE_MODE_CREATE` (0x8000000000000000) 。
 
 
 
 
-* 
-`Attributes` (僅在 Create 模式下有效): 如 Read Only, Hidden, Directory 等 。
+* `Attributes` (僅在 Create 模式下有效): 如 Read Only, Hidden, Directory 等 。
 
 
 
