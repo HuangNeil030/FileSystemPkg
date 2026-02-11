@@ -1,6 +1,4 @@
 # FileSystemPkg
-這是為您整理的 UEFI 函數使用筆記（README 版），內容整理自您提供的 `新增 文字文件 (2).txt`，涵蓋輸入/輸出、裝置路徑定位及檔案系統操作的核心函數。
-
 # UEFI 開發筆記：常用 Protocol 與函數使用指南
 
 本文件整理自 UEFI Specification 中的核心 Protocol 使用方法，包含文字輸入輸出、裝置路徑定位及檔案系統操作。
