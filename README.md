@@ -256,7 +256,9 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 ### `Close()` - 關閉檔案
 
 關閉檔案 Handle 並將所有快取資料寫入裝置 (Flush) 。
+
 ---
+
 cd /d D:\BIOS\MyWorkSpace\edk2
 
 edksetup.bat Rebuild
