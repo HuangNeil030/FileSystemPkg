@@ -20,7 +20,6 @@ typedef EFI_STATUS (EFIAPI *EFI_INPUT_READ_KEY) (
 
 ```
 
-
 * **參數 (Parameters):**
 * `This`: 指向 `EFI_SIMPLE_TEXT_INPUT_PROTOCOL` 實例的指標 。
 
@@ -166,12 +165,9 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 相對於目前 Handle (如目錄) 的位置開啟新檔案 。
 
 * **參數 (Parameters):**
-* 
-`NewHandle`: 傳回新開啟檔案的 Handle 。
-
+* `NewHandle`: 傳回新開啟檔案的 Handle 。
 
 * `FileName`: 檔案名稱（可含路徑修飾符如 `.` 或 `..`） 。
-
 
 * `OpenMode`:
 * `EFI_FILE_MODE_READ` (0x01)
