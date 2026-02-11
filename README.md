@@ -149,8 +149,7 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 
 提供存取裝置上檔案系統的介面 。
 
-* 
-**OpenVolume()**: 開啟儲存區卷冊的根目錄 。
+* **OpenVolume()**: 開啟儲存區卷冊的根目錄 。
 
 * 回傳根目錄的 `EFI_FILE_PROTOCOL` Handle 。
 
