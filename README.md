@@ -206,6 +206,119 @@ typedef EFI_STATUS (EFIAPI *EFI_LOCATE_DEVICE_PATH) (
 
 關閉檔案 Handle 並將所有快取資料寫入裝置 (Flush) 。
 
+這是一份為您整理的 **「系統架構與主選單流程 (System Architecture & Menu Flow)」** 教科書級技術說明文件。
+
+這份文件非常適合作為專案的 README、開發報告（Report）或簡報（PPT）的基礎素材，幫助您清晰地解釋這個 UEFI 應用程式的底層運作邏輯。
+
+---
+
+# 系統架構與主選單流程
+
+## 壹、 系統架構 (System Architecture)
+
+在 UEFI (Unified Extensible Firmware Interface) 環境下，應用程式無法直接操作硬體（例如直接讀寫硬碟磁區或控制顯示卡），而是必須透過 UEFI 韌體提供的 **「協議 (Protocols)」** 與 **「服務 (Services)」** 來進行溝通。
+
+本 File System Utility 的架構由上到下可分為三個主要層級：
+
+### 1. 應用程式層 (Application Layer)
+
+這是我們撰寫的 `FileSystem.c` 核心邏輯。負責處理使用者介面 (UI)、狀態機 (State Machine) 以及商業邏輯（如：合併兩個檔案時，先讀 A 再讀 B 的流程）。
+
+### 2. UEFI 協議與服務層 (Protocol & Service Layer)
+
+應用程式透過全域指標 `gST` (System Table) 與 `gBS` (Boot Services) 呼叫底層介面。本系統依賴以下四大核心組件：
+
+* **輸入與輸出 (Console I/O)**:
+* `EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL` (`gST->ConOut`): 負責清空畫面 (`ClearScreen`)、設定顏色 (`SetAttribute`)、移動游標 (`SetCursorPosition`)。
+* `EFI_SIMPLE_TEXT_INPUT_PROTOCOL` (`gST->ConIn`): 負責讀取使用者的鍵盤輸入 (`ReadKeyStroke`)，包含方向鍵與一般字元。
+
+
+* **檔案系統 (File System)**:
+* `EFI_SIMPLE_FILE_SYSTEM_PROTOCOL`: 作為進入點，用於尋找儲存裝置並「開啟根目錄卷冊 (`OpenVolume`)」。
+* `EFI_FILE_PROTOCOL`: 檔案操作的核心 Handle。所有的建立 (`Open` + Create)、刪除 (`Delete`)、讀取 (`Read`)、寫入 (`Write`) 都是針對此 Protocol 的實例進行。
+
+
+* **啟動服務 (Boot Services)**:
+* `gBS->WaitForEvent`: 負責「事件驅動 (Event-driven)」機制，讓 CPU 進入休眠等待按鍵，避免 100% 佔用率。
+* `gBS->LocateProtocol`: 用於在系統中尋找支援檔案系統的硬體裝置。
+
+
+
+### 3. 硬體 / 韌體層 (Hardware / Firmware Layer)
+
+UEFI 核心韌體與硬碟的 FAT32 檔案系統。當我們呼叫 `Write` 時，UEFI 韌體會將請求轉換為實際的 Block I/O 操作，將資料寫入隨身碟或硬碟中。
+
+---
+
+## 貳、 主選單流程 (Main Menu Flow)
+
+主程式 (`UefiMain`) 採用了一個典型的 **無限迴圈狀態機 (Infinite Loop State Machine)** 架構。在此架構中，程式會不斷地「繪製畫面 -> 等待輸入 -> 處理邏輯」，直到使用者觸發退出條件。
+
+### 流程圖 (Flowchart)
+
+```text
+[UefiMain 進入點]
+       │
+       ▼
+(隱藏游標，初始化變數 Running = TRUE, Index = 0)
+       │
+       ▼
+ ┌───> [1. 繪製選單 (DrawMenu)] ────────────────────────┐
+ │     利用 SetAttribute 標示目前的 Index (反白顯示)    │
+ │     │                                                │
+ │     ▼                                                │
+ │   [2. 等待事件 (WaitForEvent)]                       │
+ │     CPU 暫停，直到鍵盤發發中斷訊號 (按下任意鍵)      │
+ │     │                                                │
+ │     ▼                                                │
+ │   [3. 讀取按鍵 (ReadKeyStroke)]                      │
+ │     取得 ScanCode (方向鍵) 或 UnicodeChar (字元/Enter)│
+ │     │                                                │
+ │     ▼                                                │
+ │   [4. 按鍵邏輯判斷 (Switch-Case)]                    │
+ │     ├─ 按下 UP   : if (Index > 0) Index--            │
+ │     ├─ 按下 DOWN : if (Index < Max) Index++          │
+ │     ├─ 按下 ESC  : 變數 Running = FALSE ───────┐     │
+ │     └─ 按下 ENTER:                             │     │
+ │          │                                     │     │
+ │          ▼                                     │     │
+ │        [5. 執行對應功能]                       │     │
+ │          - 清除畫面，顯示游標                  │     │
+ │          - 根據 Index 呼叫對應函式             │     │
+ │            (DoCreate, DoCopy, DoMerge...)      │     │
+ │          - 執行完畢後，顯示 "Press any key..." │     │
+ │          │                                     │     │
+ │          ▼                                     │     │
+ │        [6. 重置與返回]                         │     │
+ │          - Reset 鍵盤緩衝區 (避免殘留按鍵)     │     │
+ │          - WaitForEvent 等待返回鍵             │     │
+ │          - 隱藏游標                            │     │
+ └──────────┘                                     │     │
+                                                  │     │
+ [程式結束] <─────────────────────────────────────┴─────┘
+       │
+       ▼
+(恢復螢幕預設狀態，顯示游標)
+return EFI_SUCCESS;
+
+```
+
+### 流程步驟詳解：
+
+1. **UI 繪製與狀態更新 (`DrawMenu`)**
+* 程式依賴 `SelectedIndex` 變數來追蹤目前游標停留的選項。
+* 每次迴圈開始時，先呼叫 `ClearScreen` 清除舊畫面，然後逐行印出選單。當印到的行數與 `SelectedIndex` 相同時，將背景色改為藍色 (`EFI_BACKGROUND_BLUE`) 以達成「高亮 (Highlight)」的視覺效果。
+
+
+2. **事件驅動等待 (`WaitForEvent`)**
+* 這是教科書級的標準做法。如果不使用 `WaitForEvent` 而直接用 `while` 迴圈狂問 `ReadKeyStroke`，會導致 CPU 使用率飆升至 100%（俗稱 Busy Polling 或 Busy Waiting）。
+* 使用 `WaitForEvent(&gST->ConIn->WaitForKey)` 可以讓程式休眠，直到硬體通知「有按鍵進來了」才喚醒 CPU。
+
+
+3. **防呆與緩衝區清理 (`Reset`)**
+* 在執行完特定功能（如輸入檔名、複製檔案）後，使用者的鍵盤緩衝區可能還殘留著多餘的按鍵（例如多按了幾下 Enter）。
+* 此時程式會呼叫 `gST->ConIn->Reset(gST->ConIn, FALSE)` 強制清空緩衝區，確保「Press any key to return menu」這個提示能確實攔截到使用者下一次「全新」的按鍵，防止畫面一閃而過就跳回主選單。
+
 ---
 
 cd /d D:\BIOS\MyWorkSpace\edk2
